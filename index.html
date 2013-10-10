@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Picasa Album Slideshow</title>
+	<style type="text/css">
+	#container {
+		position: relative;
+	}
+	#container .wrapper {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: white center center no-repeat;
+	}
+	</style>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script type="text/javascript">
+	function getParameterByName(name) {
+	    var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+	    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+	}
+	$(function() {
+		var userId = getParameterByName('userId');
+		var albumId = getParameterByName('albumId');
+		var authKey = getParameterByName('authKey');
+		var size = getParameterByName('size') || 600;
+		var speed = getParameterByName('speed') || 3000;
+
+		if (!userId) { 
+			alert("Missing required userId parameter in the URL"); 
+			return; 
+		}
+		if (!albumId) { 
+			alert("Missing required albumId parameter in the URL"); 
+			return; 
+		}
+		
+		var url = 'http://picasaweb.google.com/data/feed/api/user/' + userId + '/album/' + albumId + '?kind=photo&alt=json&imgmax=d&callback=?';
+
+		if (authKey) {
+			url += '&authuser=0&authkey=' + authKey;
+		}
+
+		var $container = $('#container');
+		$container.css({height: size, width: size});
+
+		$.getJSON(url, function(data) {
+			if (typeof data == 'object' && 'feed' in data) {
+				for (var i in data.feed.entry) {
+					var e = data.feed.entry[i];
+					var imgSrc = e.content.src.replace(/\/d\/([^/]+)$/, '/s600/$1');
+					$container.append('<div class="wrapper" style="background-image: url(' + imgSrc + ')"></div>');
+				}
+				setInterval(function() { $container.find('.wrapper:last').prependTo($container); console.log('here'); }, speed);
+			}
+		});
+	});
+	</script>
+</head>
+<body>
+<div id="container"></div>
+</body>
+</html>
