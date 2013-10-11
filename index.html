@@ -55,7 +55,7 @@
 				for (var i in data.feed.entry) {
 					var e = data.feed.entry[i];
 					var imgSrc = e.content.src.replace(/\/d\/([^/]+)$/, '/s600/$1');
-					$container.append('<div class="wrapper" style="background-image: url(' + imgSrc + ')"></div>');
+					$container.prepend('<div class="wrapper" style="background-image: url(' + imgSrc + ')"></div>');
 				}
 				setInterval(function() { $container.find('.wrapper:last').prependTo($container); console.log('here'); }, speed);
 			}
